@@ -1,3 +1,7 @@
 from django.contrib import admin
+from .models import * 
 
-# Register your models here.
+class PedidoCustomizado(admin.ModelAdmin):
+    list_display = ('numeroPedido', 'nomeCliente', )
+
+admin.site.register(pedido, PedidoCustomizado)    
