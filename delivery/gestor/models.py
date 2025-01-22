@@ -21,7 +21,7 @@ class Entregador(models.Model):
     horarioChegada = models.DateTimeField(auto_now_add=True, null=False, blank=False, verbose_name='Horário de Chegada do Entregador')  # Horário e data de chegada do entregado no restaurante.
 
     def __str__(self):
-        return self.nome  # Representação legível do cliente
+        return self.nome
     
     class Meta:
         ordering = ['nome']
@@ -34,7 +34,7 @@ class Produto(models.Model):
     precoUnitario = models.DecimalField(max_digits=10, decimal_places=2, null=False, blank=False, verbose_name='Preço Unitário')  # Valor total em reais
 
     def __str__(self):
-        return self.nome  # Representação legível do cliente
+        return self.nome
     
     class Meta:
         ordering = ['nome']
