@@ -41,7 +41,7 @@ class Produto(models.Model):
 
 
 # Pedidos
-class Pedido(models.Model):
+class pedido(models.Model):
 
     # Definição das opções de status do pedido
     STATUS_CHOICES = [
@@ -50,6 +50,7 @@ class Pedido(models.Model):
         ('PRT', 'Pronto'),
         ('ENV', 'Enviado'),
         ('ENT', 'Entregue'),
+        ('CAN', 'Cancelado'),
     ]
     produto = models.ForeignKey(Produto, on_delete=models.CASCADE, default=1)  # Chave estrangeira do Produto
     entregador = models.ForeignKey(Entregador, on_delete=models.CASCADE, default=1)  # Chave estrangeira do Entregador
