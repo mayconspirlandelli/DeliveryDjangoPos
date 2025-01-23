@@ -61,46 +61,37 @@ class pedido_list(ListView):
     template_name = "gestor/pedido_list.html"  # Nome do template
     context_object_name = "pedidos"  # Nome do contexto passado ao template
     paginate_by = 20  # Paginação, 10 itens por página (opcional)
-    
 
 
-# Classe cadastra o pedido. NAO TESTEI AINDA
-# from django.urls import reverse_lazy
-# from django.views.generic.edit import CreateView
-# class pedido_create(CreateView):
-#     from .models import pedido
+#Atualiza o pedido
+from django.views.generic.edit import UpdateView
+class pedido_update(UpdateView):
+    from .models import pedido
+    model = pedido
+    form_class = PedidoForm
+    template_name = "gestor/pedido_form.html"  # Nome do template
+    def get_success_url(self):
+        return reverse_lazy("pedido_list")  # Redireciona após o sucesso
 
-#     model = pedido
-#     fields = [
-#         "numeroPedido",
-#         "horarioDataPedido",
-#         "valorTotal",
-#         "status",
-#     ]
-#     def get_success_url(self):
-#         return reverse_lazy("historico_pedidos.html")
-
-
-def salvarPedido(request):
-    xnumeroPedido = request.POST.get("numeroPedido")
-    xhorarioDataPedido = request.POST.get("horarioDataPedido")
-    xvalorTotal = request.POST.get("valorTotal")
-    xstatus = request.POST.get("status")
-    print(xnumeroPedido)
-    print(xhorarioDataPedido)
-    print(xvalorTotal)
-    print(xstatus)
-
-    # from .models import pedido
-    # pedido.objects.create(
-    #     numeroPedido=xnumeroPedido,
-    #     horarioDataPedido=xhorarioDataPedido,
-    #     valorTotal=xvalorTotal,
-    #     status=xstatus,
-    # )
-    return render(request, "historico_pedidos.html")
+#Exclusao do Pedido
+from django.urls import reverse_lazy
+from django.views.generic.edit import DeleteView
+from .models import pedido
+class pedido_delete(DeleteView):
+    model = pedido 
+    template_name = "gestor/pedido_delete.html"  # Template de confirmação
+    success_url = reverse_lazy("pedido_list")  # Redireciona para a lista após a exclusão
 
 
+# Visualizar o detalhe do pedido
+from django.views.generic.detail import DetailView
+class pedido_detail(DetailView):
+    model = pedido
+    template_name = "gestor/pedido_detail.html"
+    context_object_name = "pedido"
+
+
+# Criar Entregador.
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView
 class entregador_create(CreateView):
