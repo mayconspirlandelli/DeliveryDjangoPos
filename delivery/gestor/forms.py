@@ -22,3 +22,7 @@ class PedidoForm(forms.ModelForm):
             "numeroPedido": forms.TextInput(attrs={"class": "form-control"}),
             "valorTotal": forms.TextInput(attrs={"class": "form-control"}),
         }
+
+from django import forms
+class UploadCSVForm(forms.Form):
+    arquivo_csv = forms.FileField(label="Selecione o arquivo CSV")

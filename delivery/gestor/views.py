@@ -103,3 +103,66 @@ class entregador_create(CreateView):
     ]
     def get_success_url(self):
         return reverse_lazy("entregador_form.html")
+
+
+
+def ia_import(request):
+    return render(request, 'ia_import.html')
+
+import pandas as pd
+from django.shortcuts import render, redirect
+from .forms import UploadCSVForm
+from .models import pedido
+
+def importar_pedidos(request):
+    if request.method == "POST":
+        form = UploadCSVForm(request.POST, request.FILES)
+        if form.is_valid():
+            arquivo_csv = form.cleaned_data["arquivo_csv"]
+            # Ler o CSV usando Pandas
+            try:
+                df = pd.read_csv(arquivo_csv)
+                # Iterar pelas linhas do DataFrame e salvar no banco de dados
+                for _, row in df.iterrows():
+                    pedido.objects.create(
+                        numero_pedido=row["numero_pedido"],
+                        data_pedido=row["data_pedido"],
+                        valor_total=row["valor_total"],
+                        cliente=row["cliente"],
+                        status=row["status"],
+                    )
+                return redirect("pedido_list")  # Redirecionar para a lista de pedidos
+            except Exception as e:
+                return render(request, "gestor/importar_pedidos.html", {
+                    "form": form,
+                    "erro": f"Erro ao processar o arquivo: {e}",
+                })
+    else:
+        form = UploadCSVForm()
+    return render(request, "gestor/importar_pedidos.html", {"form": form})
+
+
+
+def ia_import_save(request):
+    from .models import dados
+    import os
+    from django.core.files.storage import FileSystemStorage
+    if request.method == 'POST' and request.FILES['arq_upload']:
+    fss = FileSystemStorage()
+    upload = request.FILES['arq_upload']
+    file1 = fss.save(upload.name, upload)
+    file_url = fss.url(file1)
+    from .models import dados
+    dados.objects.all().delete()
+    i = 0
+    file2 = open(file1,'r')
+    for row in file2:
+    if (i > 0):
+    row2 = row.replace(',', '.')
+    row3 = row2.split(';')
+    dados.objects.create(
+    grupo = row3[0], mdw = float(row3[1]), latw = float(row3[2]),
+    tmcw = float(row3[3]), racw = float(row3[4]), araw = float(row3[5]),
+    i = i + 1
+    file2.close()
+    os.remove(file_url.replace(
