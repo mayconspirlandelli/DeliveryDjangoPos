@@ -109,6 +109,14 @@ class entregador_create(CreateView):
 # def ia_import(request):
 #     return render(request, 'ia_import.html')
 
+#Apagar todos os registros das tabelas
+from .models import pedido, Entregador, Produto, Cliente
+def limpar_banco():
+    Entregador.objects.all().delete()
+    Cliente.objects.all().delete()
+    Produto.objects.all().delete()
+    pedido.objects.all().delete()
+    
 
 import pandas as pd
 from decimal import Decimal
@@ -121,6 +129,8 @@ def importar_pedidos(request):
         if form.is_valid():
             arquivo_csv = form.cleaned_data["arquivo_csv"]
             try:
+                limpar_banco()
+                
                 df = pd.read_csv(arquivo_csv)
                 print(df)
                 for _, row in df.iterrows():
@@ -130,6 +140,9 @@ def importar_pedidos(request):
                         telefone=row["EntregadorTelefone"],
                         horarioChegada=row["EntregadorHoraChegada"],                        
                     )
+                    #entregadorObjeto = Entregador.objects.filter(nome=row["EntregadorNome"])
+                    #entregadorObjeto = Entregador.objects.latest('id')
+                    entregadorObjeto, created_entregador = Entregador.objects.get_or_create(nome=row["EntregadorNome"])
                     
                     Cliente.objects.create(
                         nome=row["Cliente"],
@@ -137,6 +150,8 @@ def importar_pedidos(request):
                         endereco=row["ClienteEndereco"],                        
                         quantidadePedidos=row["QtdePedidos"],                        
                     )
+                    #clienteObjeto = Cliente.objects.filter(nome=row["Cliente"])
+                    clienteObjeto = Cliente.objects.latest('id')
                     
                     # Remover o "R$" e substituir a vírgula por ponto
                     # Substituir a vírgula por ponto e converter para Decimal
@@ -148,6 +163,8 @@ def importar_pedidos(request):
                         quantidadeProduto=row["QtdeProduto"],
                         precoUnitario=preco,
                     )
+                    #produtoObjeto = Produto.objects.filter(nome=row["Produto"])
+                    produtoObjeto = Produto.objects.latest('id')
                     
                     # Substituir a vírgula por ponto e converter para Decimal
                     valor_str = row["ValorTotalPedido"].replace("R$", "").replace(",", ".")
@@ -158,6 +175,9 @@ def importar_pedidos(request):
                         horarioDataPedido=row["DataPedido"],
                         valorTotal=valor_total,
                         status=row["StatusPedido"],
+                        cliente=clienteObjeto,
+                        produto=produtoObjeto,
+                        entregador=entregadorObjeto,
                     )
                 return redirect("pedido_list")  # Redirecionar para a lista de pedidos
             except Exception as e:
