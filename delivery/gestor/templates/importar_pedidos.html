@@ -1,0 +1,22 @@
+{% load static %} {% load bootstrap5 %} {% bootstrap_css %}
+{%bootstrap_javascript %} {% bootstrap_messages %}
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Importar Pedidos</title>
+  </head>
+  <body>
+    <div class="container mt-5">
+      <h1>Importar Pedidos</h1>
+      {% if erro %}
+        <div class="alert alert-danger">{{ erro }}</div>
+      {% endif %}
+      <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Enviar</button>
+      </form>
+    </div>
+  </body>
+</html>

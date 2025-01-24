@@ -60,7 +60,7 @@ class pedido_list(ListView):
     model = pedido
     template_name = "gestor/pedido_list.html"  # Nome do template
     context_object_name = "pedidos"  # Nome do contexto passado ao template
-    paginate_by = 20  # Paginação, 10 itens por página (opcional)
+    paginate_by = 500  # Paginação, 10 itens por página (opcional)
 
 
 #Atualiza o pedido
@@ -106,63 +106,91 @@ class entregador_create(CreateView):
 
 
 
-def ia_import(request):
-    return render(request, 'ia_import.html')
+# def ia_import(request):
+#     return render(request, 'ia_import.html')
+
 
 import pandas as pd
+from decimal import Decimal
 from django.shortcuts import render, redirect
 from .forms import UploadCSVForm
-from .models import pedido
-
+from .models import pedido, Entregador, Produto, Cliente
 def importar_pedidos(request):
     if request.method == "POST":
         form = UploadCSVForm(request.POST, request.FILES)
         if form.is_valid():
             arquivo_csv = form.cleaned_data["arquivo_csv"]
-            # Ler o CSV usando Pandas
             try:
                 df = pd.read_csv(arquivo_csv)
-                # Iterar pelas linhas do DataFrame e salvar no banco de dados
+                print(df)
                 for _, row in df.iterrows():
+        
+                    Entregador.objects.create(
+                        nome=row["EntregadorNome"],
+                        telefone=row["EntregadorTelefone"],
+                        horarioChegada=row["EntregadorHoraChegada"],                        
+                    )
+                    
+                    Cliente.objects.create(
+                        nome=row["Cliente"],
+                        telefone=row["ClienteTelefone"],
+                        endereco=row["ClienteEndereco"],                        
+                        quantidadePedidos=row["QtdePedidos"],                        
+                    )
+                    
+                    # Remover o "R$" e substituir a vírgula por ponto
+                    # Substituir a vírgula por ponto e converter para Decimal
+                    preco_str = row["PrecoUnitario"].replace("R$", "").replace(",", ".")
+                    preco = Decimal(preco_str)
+                    
+                    Produto.objects.create(
+                        nome=row["Produto"],
+                        quantidadeProduto=row["QtdeProduto"],
+                        precoUnitario=preco,
+                    )
+                    
+                    # Substituir a vírgula por ponto e converter para Decimal
+                    valor_str = row["ValorTotalPedido"].replace("R$", "").replace(",", ".")
+                    valor_total = Decimal(valor_str)
+                    
                     pedido.objects.create(
-                        numero_pedido=row["numero_pedido"],
-                        data_pedido=row["data_pedido"],
-                        valor_total=row["valor_total"],
-                        cliente=row["cliente"],
-                        status=row["status"],
+                        numeroPedido=row["NumeroPedido"],
+                        horarioDataPedido=row["DataPedido"],
+                        valorTotal=valor_total,
+                        status=row["StatusPedido"],
                     )
                 return redirect("pedido_list")  # Redirecionar para a lista de pedidos
             except Exception as e:
-                return render(request, "gestor/importar_pedidos.html", {
+                return render(request, "importar_pedidos.html", {
                     "form": form,
                     "erro": f"Erro ao processar o arquivo: {e}",
                 })
     else:
         form = UploadCSVForm()
-    return render(request, "gestor/importar_pedidos.html", {"form": form})
+    return render(request, "importar_pedidos.html", {"form": form})
 
 
 
-def ia_import_save(request):
-    from .models import dados
-    import os
-    from django.core.files.storage import FileSystemStorage
-    if request.method == 'POST' and request.FILES['arq_upload']:
-    fss = FileSystemStorage()
-    upload = request.FILES['arq_upload']
-    file1 = fss.save(upload.name, upload)
-    file_url = fss.url(file1)
-    from .models import dados
-    dados.objects.all().delete()
-    i = 0
-    file2 = open(file1,'r')
-    for row in file2:
-    if (i > 0):
-    row2 = row.replace(',', '.')
-    row3 = row2.split(';')
-    dados.objects.create(
-    grupo = row3[0], mdw = float(row3[1]), latw = float(row3[2]),
-    tmcw = float(row3[3]), racw = float(row3[4]), araw = float(row3[5]),
-    i = i + 1
-    file2.close()
-    os.remove(file_url.replace(
+# def ia_import_save(request):
+#     from .models import dados
+#     import os
+#     from django.core.files.storage import FileSystemStorage
+#     if request.method == 'POST' and request.FILES['arq_upload']:
+#     fss = FileSystemStorage()
+#     upload = request.FILES['arq_upload']
+#     file1 = fss.save(upload.name, upload)
+#     file_url = fss.url(file1)
+#     from .models import dados
+#     dados.objects.all().delete()
+#     i = 0
+#     file2 = open(file1,'r')
+#     for row in file2:
+#     if (i > 0):
+#     row2 = row.replace(',', '.')
+#     row3 = row2.split(';')
+#     dados.objects.create(
+#     grupo = row3[0], mdw = float(row3[1]), latw = float(row3[2]),
+#     tmcw = float(row3[3]), racw = float(row3[4]), araw = float(row3[5]),
+#     i = i + 1
+#     file2.close()
+#     os.remove(file_url.replace(

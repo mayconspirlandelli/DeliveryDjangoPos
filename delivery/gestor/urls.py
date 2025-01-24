@@ -16,7 +16,9 @@ urlpatterns = [
         views.entregador_create.as_view(),
         name="entregador_create",
     ),
-    path('ia_import', views.ia_import, name='ia_import'),
-    path('ia_import_save', views.ia_import_save, name='ia_import_save'),
-    path('ia_import_list', views.ia_import_list, name='ia_import_list'),
+    
+    path("importar_pedidos/", views.importar_pedidos, name="importar_pedidos"),
+    # path('ia_import', views.ia_import, name='ia_import'),
+    # path('ia_import_save', views.ia_import_save, name='ia_import_save'),
+    # path('ia_import_list', views.ia_import_list, name='ia_import_list'),
 ]
