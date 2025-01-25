@@ -120,6 +120,7 @@ def limpar_banco():
 
 import pandas as pd
 from decimal import Decimal
+from datetime import datetime
 from django.shortcuts import render, redirect
 from .forms import UploadCSVForm
 from .models import pedido, Entregador, Produto, Cliente
@@ -135,16 +136,17 @@ def importar_pedidos(request):
                 print(df)
                 for _, row in df.iterrows():
         
-                    Entregador.objects.create(
+        #data_pedido = datetime.strptime(row["data_pedido"], "%d/%m/%y").date()
+                    entregadorObjeto = Entregador.objects.get_or_create(
                         nome=row["EntregadorNome"],
                         telefone=row["EntregadorTelefone"],
-                        horarioChegada=row["EntregadorHoraChegada"],                        
+                        horarioChegada=datetime.strptime(row["EntregadorHoraChegada"], "%d/%m/%y").date()
                     )
                     #entregadorObjeto = Entregador.objects.filter(nome=row["EntregadorNome"])
-                    #entregadorObjeto = Entregador.objects.latest('id')
-                    entregadorObjeto, created_entregador = Entregador.objects.get_or_create(nome=row["EntregadorNome"])
+                    entregadorObjeto = Entregador.objects.latest('id')
+                    #entregadorObjeto, created_entregador = Entregador.objects.get_or_create(nome=row["EntregadorNome"])
                     
-                    Cliente.objects.create(
+                    clienteObjeto = Cliente.objects.get_or_create(
                         nome=row["Cliente"],
                         telefone=row["ClienteTelefone"],
                         endereco=row["ClienteEndereco"],                        
@@ -152,19 +154,21 @@ def importar_pedidos(request):
                     )
                     #clienteObjeto = Cliente.objects.filter(nome=row["Cliente"])
                     clienteObjeto = Cliente.objects.latest('id')
+                    #clienteObjeto, created_cliente = Cliente.objects.get_or_create(nome=row["Cliente"])
                     
                     # Remover o "R$" e substituir a vírgula por ponto
                     # Substituir a vírgula por ponto e converter para Decimal
                     preco_str = row["PrecoUnitario"].replace("R$", "").replace(",", ".")
                     preco = Decimal(preco_str)
                     
-                    Produto.objects.create(
-                        nome=row["Produto"],
+                    produtoObjeto = Produto.objects.get_or_create(
+                        nome=row["Produto"], 
                         quantidadeProduto=row["QtdeProduto"],
                         precoUnitario=preco,
                     )
                     #produtoObjeto = Produto.objects.filter(nome=row["Produto"])
                     produtoObjeto = Produto.objects.latest('id')
+                    #produtoObjeto, created_produto = Produto.objects.get_or_create(nome=row["Produto"])
                     
                     # Substituir a vírgula por ponto e converter para Decimal
                     valor_str = row["ValorTotalPedido"].replace("R$", "").replace(",", ".")
@@ -172,7 +176,8 @@ def importar_pedidos(request):
                     
                     pedido.objects.create(
                         numeroPedido=row["NumeroPedido"],
-                        horarioDataPedido=row["DataPedido"],
+                        #horarioDataPedido=row["DataPedido"],
+                        horarioDataPedido=datetime.strptime(row["DataPedido"], "%d/%m/%y").date(),
                         valorTotal=valor_total,
                         status=row["StatusPedido"],
                         cliente=clienteObjeto,

@@ -18,7 +18,8 @@ class Cliente(models.Model):
 class Entregador(models.Model):
     nome = models.CharField(max_length=50, null=False, blank=False, verbose_name='Nome do Cliente')
     telefone = models.CharField(max_length=15, blank=True, null=True)  # Telefone (opcional)
-    horarioChegada = models.DateTimeField(auto_now_add=True, null=False, blank=False, verbose_name='Horário de Chegada do Entregador')  # Horário e data de chegada do entregado no restaurante.
+    #horarioChegada = models.DateTimeField(auto_now_add=True, null=False, blank=False, verbose_name='Horário de Chegada do Entregador')  # Horário e data de chegada do entregado no restaurante.
+    horarioChegada = models.DateField( null=True, blank=True, verbose_name='Horário de Chegada do Entregador')  # Horário e data de chegada do entregado no restaurante.
 
     def __str__(self):
         return self.nome
@@ -56,7 +57,9 @@ class pedido(models.Model):
     entregador = models.ForeignKey(Entregador, on_delete=models.CASCADE, default=1)  # Chave estrangeira do Entregador
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, default=1)  # Chave estrangeira do cliente
     numeroPedido = models.CharField(max_length=50, null=False, blank=False, verbose_name='Número do Pedido')
-    horarioDataPedido = models.DateTimeField(auto_now_add=True,  null=False, blank=False, verbose_name='Horário do Pedido')  # Horário e data do pedido
+    #horarioDataPedido = models.DateTimeField(auto_now_add=True,  null=False, blank=False, verbose_name='Horário do Pedido')  # Horário e data do pedido
+    
+    horarioDataPedido = models.DateField(null=True, blank=True, verbose_name='Horário do Pedido')  # Horário e data do pedido
     #Calculado dinamicamente. Ajustar isso no futuro.
     valorTotal = models.DecimalField(max_digits=10, decimal_places=2,null=False, blank=False, verbose_name='Valor total')  # Valor total em reais
     status = models.CharField(
