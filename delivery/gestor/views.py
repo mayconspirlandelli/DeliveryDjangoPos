@@ -1,6 +1,17 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.http import HttpResponse
 from django.contrib.auth import authenticate, login, logout
+import pandas as pd
+from decimal import Decimal
+from datetime import datetime
+from .forms import UploadCSVForm
+from .models import pedido, Entregador, Produto, Cliente
+from django.urls import reverse_lazy
+from django.views.generic.edit import CreateView
+from django.views.generic.edit import UpdateView
+from .forms import PedidoForm
+
+
 
 def index(request):
     print("else")
@@ -42,10 +53,6 @@ def historico_pedidos(request):
     return render(request, "historico_pedidos.html", dicionario)
 
 
-from django.views.generic.edit import CreateView
-from django.urls import reverse_lazy
-from .models import pedido
-from .forms import PedidoForm
 class pedido_create(CreateView):
     model = pedido
     form_class = PedidoForm
@@ -64,7 +71,6 @@ class pedido_list(ListView):
 
 
 #Atualiza o pedido
-from django.views.generic.edit import UpdateView
 class pedido_update(UpdateView):
     from .models import pedido
     model = pedido
@@ -110,20 +116,51 @@ class entregador_create(CreateView):
 #     return render(request, 'ia_import.html')
 
 #Apagar todos os registros das tabelas
-from .models import pedido, Entregador, Produto, Cliente
+
 def limpar_banco():
     Entregador.objects.all().delete()
     Cliente.objects.all().delete()
     Produto.objects.all().delete()
     pedido.objects.all().delete()
+
+
+def convertToDecimal(valor_texto):
+    """
+    Converte um texto formatado como valor monetário (e.g., 'R$19,56') para Decimal.
+    
+    Args:
+        valor_texto (str): O texto contendo o valor a ser convertido.
+
+    Returns:
+        Decimal: O valor convertido em formato Decimal.
+    """
+    try:
+        # Remove o símbolo "R$" e substitui a vírgula por ponto
+        valor_texto = valor_texto.replace("R$", "").replace(",", ".").strip()
+        return Decimal(valor_texto)
+    except Exception as e:
+        raise ValueError(f"Erro ao converter '{valor_texto}' para Decimal: {e}")                       
+    
+    
+    from datetime import datetime
+
+def convertToDate(data_texto):
+    """
+    Converte um texto de data no formato '%d/%m/%y' para um objeto `date`.
+
+    Args:
+        data_texto (str): O texto contendo a data no formato 'DD/MM/YY'.
+
+    Returns:
+        date: Um objeto de data correspondente ao texto fornecido.
+    """
+    try:
+        # Converte o texto para um objeto datetime e extrai a data
+        return datetime.strptime(data_texto, "%d/%m/%y").date()
+    except Exception as e:
+        raise ValueError(f"Erro ao converter '{data_texto}' para data: {e}")
     
 
-import pandas as pd
-from decimal import Decimal
-from datetime import datetime
-from django.shortcuts import render, redirect
-from .forms import UploadCSVForm
-from .models import pedido, Entregador, Produto, Cliente
 def importar_pedidos(request):
     if request.method == "POST":
         form = UploadCSVForm(request.POST, request.FILES)
@@ -131,54 +168,38 @@ def importar_pedidos(request):
             arquivo_csv = form.cleaned_data["arquivo_csv"]
             try:
                 limpar_banco()
-                
                 df = pd.read_csv(arquivo_csv)
                 print(df)
-                for _, row in df.iterrows():
         
-        #data_pedido = datetime.strptime(row["data_pedido"], "%d/%m/%y").date()
-                    entregadorObjeto = Entregador.objects.get_or_create(
+                for _, row in df.iterrows():
+                    entregadorObjeto = Entregador.objects.create(
                         nome=row["EntregadorNome"],
                         telefone=row["EntregadorTelefone"],
                         horarioChegada=datetime.strptime(row["EntregadorHoraChegada"], "%d/%m/%y").date()
                     )
-                    #entregadorObjeto = Entregador.objects.filter(nome=row["EntregadorNome"])
-                    entregadorObjeto = Entregador.objects.latest('id')
-                    #entregadorObjeto, created_entregador = Entregador.objects.get_or_create(nome=row["EntregadorNome"])
-                    
-                    clienteObjeto = Cliente.objects.get_or_create(
+                    clienteObjeto = Cliente.objects.create(
                         nome=row["Cliente"],
                         telefone=row["ClienteTelefone"],
                         endereco=row["ClienteEndereco"],                        
                         quantidadePedidos=row["QtdePedidos"],                        
                     )
-                    #clienteObjeto = Cliente.objects.filter(nome=row["Cliente"])
-                    clienteObjeto = Cliente.objects.latest('id')
-                    #clienteObjeto, created_cliente = Cliente.objects.get_or_create(nome=row["Cliente"])
                     
                     # Remover o "R$" e substituir a vírgula por ponto
                     # Substituir a vírgula por ponto e converter para Decimal
-                    preco_str = row["PrecoUnitario"].replace("R$", "").replace(",", ".")
-                    preco = Decimal(preco_str)
+                    # preco_str = row["PrecoUnitario"].replace("R$", "").replace(",", ".")
+                    # preco = Decimal(preco_str)
                     
-                    produtoObjeto = Produto.objects.get_or_create(
+                    produtoObjeto = Produto.objects.create(
                         nome=row["Produto"], 
                         quantidadeProduto=row["QtdeProduto"],
-                        precoUnitario=preco,
+                        precoUnitario=convertToDecimal(row["PrecoUnitario"]),
                     )
-                    #produtoObjeto = Produto.objects.filter(nome=row["Produto"])
-                    produtoObjeto = Produto.objects.latest('id')
-                    #produtoObjeto, created_produto = Produto.objects.get_or_create(nome=row["Produto"])
-                    
-                    # Substituir a vírgula por ponto e converter para Decimal
-                    valor_str = row["ValorTotalPedido"].replace("R$", "").replace(",", ".")
-                    valor_total = Decimal(valor_str)
                     
                     pedido.objects.create(
                         numeroPedido=row["NumeroPedido"],
-                        #horarioDataPedido=row["DataPedido"],
-                        horarioDataPedido=datetime.strptime(row["DataPedido"], "%d/%m/%y").date(),
-                        valorTotal=valor_total,
+                        #horarioDataPedido=datetime.strptime(row["DataPedido"], "%d/%m/%y").date(),
+                        horarioDataPedido=convertToDate(row["DataPedido"]),
+                        valorTotal=convertToDecimal(row["ValorTotalPedido"]),
                         status=row["StatusPedido"],
                         cliente=clienteObjeto,
                         produto=produtoObjeto,
@@ -186,6 +207,7 @@ def importar_pedidos(request):
                     )
                 return redirect("pedido_list")  # Redirecionar para a lista de pedidos
             except Exception as e:
+                print(e)
                 return render(request, "importar_pedidos.html", {
                     "form": form,
                     "erro": f"Erro ao processar o arquivo: {e}",
@@ -193,29 +215,3 @@ def importar_pedidos(request):
     else:
         form = UploadCSVForm()
     return render(request, "importar_pedidos.html", {"form": form})
-
-
-
-# def ia_import_save(request):
-#     from .models import dados
-#     import os
-#     from django.core.files.storage import FileSystemStorage
-#     if request.method == 'POST' and request.FILES['arq_upload']:
-#     fss = FileSystemStorage()
-#     upload = request.FILES['arq_upload']
-#     file1 = fss.save(upload.name, upload)
-#     file_url = fss.url(file1)
-#     from .models import dados
-#     dados.objects.all().delete()
-#     i = 0
-#     file2 = open(file1,'r')
-#     for row in file2:
-#     if (i > 0):
-#     row2 = row.replace(',', '.')
-#     row3 = row2.split(';')
-#     dados.objects.create(
-#     grupo = row3[0], mdw = float(row3[1]), latw = float(row3[2]),
-#     tmcw = float(row3[3]), racw = float(row3[4]), araw = float(row3[5]),
-#     i = i + 1
-#     file2.close()
-#     os.remove(file_url.replace(
