@@ -10,6 +10,7 @@
     <center>
         <h1>Detalhes do Pedido</h1>
         <p><strong>Número do Pedido:</strong> {{ pedido.numeroPedido }}</p>
+        <p><strong>Data do Pedido:</strong> {{ pedido.horarioDataPedido }}</p>
         <p><strong>Cliente do Pedido:</strong> {{ pedido.cliente.nome }}</p>
         <p><strong>Valor Total:</strong> R$ {{ pedido.valorTotal }}</p>
         <p><strong>Status:</strong> {{ pedido.get_status_display }}</p>

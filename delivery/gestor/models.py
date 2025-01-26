@@ -58,7 +58,6 @@ class pedido(models.Model):
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, default=1)  # Chave estrangeira do cliente
     numeroPedido = models.CharField(max_length=50, null=False, blank=False, verbose_name='Número do Pedido')
     #horarioDataPedido = models.DateTimeField(auto_now_add=True,  null=False, blank=False, verbose_name='Horário do Pedido')  # Horário e data do pedido
-    
     horarioDataPedido = models.DateField(null=True, blank=True, verbose_name='Horário do Pedido')  # Horário e data do pedido
     #Calculado dinamicamente. Ajustar isso no futuro.
     valorTotal = models.DecimalField(max_digits=10, decimal_places=2,null=False, blank=False, verbose_name='Valor total')  # Valor total em reais
