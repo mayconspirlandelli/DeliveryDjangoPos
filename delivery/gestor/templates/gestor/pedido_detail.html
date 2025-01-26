@@ -7,15 +7,69 @@
     <title>Detalhes do Pedido</title>
 </head>
 <body>
+    <div class="accordion" id="accordionPanelsStayOpenExample">
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
+              Pedido:
+            </button>
+          </h2>
+          <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show">
+            <div class="accordion-body">
+                <p><strong>Número do Pedido:</strong> {{ pedido.numeroPedido }}</p>
+                <p><strong>Data do Pedido:</strong> {{ pedido.horarioDataPedido }}</p>
+                <p><strong>Status:</strong> {{ pedido.get_status_display }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" 
+                type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="true" aria-controls="panelsStayOpen-collapseTwo">
+              Cliente
+            </button>
+          </h2>
+          <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse show">
+            <div class="accordion-body">
+                <p><strong>Nome:</strong> {{ pedido.cliente.nome }}</p>
+                <p><strong>Telefone:</strong> {{ pedido.cliente.telefone }}</p>
+                <p><strong>Endereço:</strong> {{ pedido.cliente.endereco }}</p>
+                <p><strong>Quantidade de Pedidos:</strong> {{ pedido.cliente.quantidadePedidos }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="false" aria-controls="panelsStayOpen-collapseThree">
+              Produtos
+            </button>
+          </h2>
+          <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse">
+            <div class="accordion-body">
+                <p><strong>Itens:</strong> R$ {{ pedido.produto }}</p>
+                <p><strong>Valor Total:</strong> R$ {{ pedido.valorTotal }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="false" aria-controls="panelsStayOpen-collapseThree">
+                Entregador
+              </button>
+            </h2>
+            <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse">
+              <div class="accordion-body">
+                <p><strong>Entregador:</strong> {{ pedido.entregador.nome }}</p>
+                <p><strong>Telefone:</strong> {{ pedido.entregador.telefone }}</p>
+                <p><strong>Data de Chegada:</strong> {{ pedido.entregador.horarioChegada }}</p>
+              </div>
+            </div>
+          </div>
+      </div>
+    </div>
+    <br>
     <center>
-        <h1>Detalhes do Pedido</h1>
-        <p><strong>Número do Pedido:</strong> {{ pedido.numeroPedido }}</p>
-        <p><strong>Data do Pedido:</strong> {{ pedido.horarioDataPedido }}</p>
-        <p><strong>Cliente do Pedido:</strong> {{ pedido.cliente.nome }}</p>
-        <p><strong>Valor Total:</strong> R$ {{ pedido.valorTotal }}</p>
-        <p><strong>Status:</strong> {{ pedido.get_status_display }}</p>
-        <p><strong>Entregador:</strong> {{ pedido.entregador.nome }}</p>
-        <a href="{% url 'pedido_list' %}" class="btn btn-secondary  btn-sm">Voltar à lista</a>
-    </center>    
+      <a href="{% url 'pedido_list' %}" class="btn btn-secondary  btn-sm">Voltar à lista</a>
+    </center>
 </body>
 </html>

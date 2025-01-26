@@ -1,0 +1,33 @@
+{% load static %} {% load bootstrap5 %} {% bootstrap_css %} {%bootstrap_javascript %} {% bootstrap_messages %}
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <title>{% block titulo %}{% endblock %}</title>
+  </head>
+  <body>
+    <center>
+      <p>bdpratico\exemplo01\templates\base.html</p>
+      <br />
+      <h2>
+        Esta é o template base.html que será estendida para os demais templates
+      </h2>
+      <br />
+      {% block corpo %}{% endblock %}
+    </center>
+  </body>
+
+  <center>
+    <br />
+    <hr />
+    <h3>{% block rodape %}{% endblock %}</h3>
+    <h4>
+      <img
+        src="{% static 'direito-autoral.png' %}"
+        class="img-fluid"
+        alt="Teste"
+        width="2%"
+      />
+      Direitos autorais do desenvolvedor Maycon Spirlandelli
+    </h4>
+  </center>
+</html>

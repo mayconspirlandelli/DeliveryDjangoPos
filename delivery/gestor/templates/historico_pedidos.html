@@ -1,6 +1,44 @@
-{% load static %} {% load bootstrap5 %} {% bootstrap_css %}
-{%bootstrap_javascript %} {% bootstrap_messages %}
+{% extends 'base.html' %}
+{% block titulo %} Histórico de Pedido 
 
+
+{% endblock %}
+{% block corpo %}
+
+    <div class="container">
+      <div class="row" style="line-height: 1">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+          <table class="table table-striped table-hover">
+            <th>Nº Pedidos</th>
+            <th>Data do Pedido</th>
+            <th>Cliente</th>
+            <th>Qtd Pedidos</th>
+            <th>Entregador</th>
+            <th>Status do Pedido</th>
+             {% for regs in pedidos %}
+            <tr>
+              <td>{{ regs.numeroPedido }}</td>
+              <td>{{ regs.horarioDataPedido }}</td>
+              <td>{{ regs.cliente.nome }}</td>
+              <td>{{ regs.cliente.quantidadePedidos }}</td>
+              <td>{{ regs.entregador.nome }}</td>
+              <td>{{ regs.get_status_display }}</td>
+            </tr>
+            {% endfor %}
+          </table>
+        </div>
+      </div>
+    </div>
+
+{% endblock %}
+
+{% block rodape %} 
+    Lista de pedidos realizados recentement.
+{% endblock %}
+
+
+
+<!-- 
 <!DOCTYPE html>
 <html>
   <head>
@@ -33,4 +71,4 @@
       </div>
     </div>
   </body>
-</html>
+</html> -->
