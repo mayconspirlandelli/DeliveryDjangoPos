@@ -27,7 +27,6 @@ def index(request):
         print(request.session["password"])
         print(request.session["usernamefull"])
         from django.shortcuts import redirect
-
         return redirect("menu_alias")
     else:
         return render(request, "index.html")

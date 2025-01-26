@@ -7,21 +7,29 @@
 <html>
   <head>
     <title>Cadastro de Pedido</title>
+    <script type="text/javascript" src="https://cdnjs.com/libraries/bootstrap-datetimepicker/4.17.37"></script>
   </head>
   <body>
     <center>
+      <h1>Cadastro de Pedido</h1>
     <div class="container">
       <div class="col-md-12 col-sm-12 col-xs-12">
         
           <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="col-md-12 col-sm-12 col-xs-12">
+              
               <div class="row" style="line-height: 1;">
                 <div class="col-md-1 col-sm-1 col-xs-1"></div>
-                <div class="col-md-8 col-sm-12 col-xs-12">
+                <div class="col-md-4 col-sm-4 col-xs-4">
+                  {% bootstrap_field form.horarioDataPedido placeholder='' %}
+                </div>
+
+                <div class="col-md-4 col-sm-4 col-xs-4">
                   {% bootstrap_field form.numeroPedido placeholder='' %}
                 </div>
               </div>
+
               <div class="row" style="line-height: 1;">
                 <div class="col-md-1 col-sm-1 col-xs-1"></div>
                 <div class="col-md-4 col-sm-4 col-xs-4">
