@@ -1,16 +1,8 @@
-{% load static %} {% load bootstrap5 %} {% bootstrap_css %}
-{%bootstrap_javascript %} {% bootstrap_messages %}
-
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Histórico de Pedidos</title>
-    
-  </head>
-  <body>
-    <center>
-
-    <h1>Histórico de Pedido</h1>
+{% extends 'base.html' %}
+{% block titulo %} Histórico de Pedido {% endblock %}
+{% block subtitulo %} Histórico de Pedido {% endblock %}
+{% block corpo %}
+  <center>
     <div class="container">
       <div class="row" style="line-height: 1">
         <div class="col-md-12 col-sm-12 col-xs-12">
@@ -45,5 +37,8 @@
       </div>
     </div>
   </center>
-  </body>
-</html>
+
+  {% endblock %}
+
+  {% block rodape %} 
+  {% endblock %}

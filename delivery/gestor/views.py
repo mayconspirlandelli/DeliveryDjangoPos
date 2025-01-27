@@ -29,8 +29,7 @@ def index(request):
         print(request.session["username"])
         print(request.session["password"])
         print(request.session["usernamefull"])
-        from django.shortcuts import redirect
-        return redirect("menu_alias")
+        return redirect("pedido_list")
     else:
         return render(request, "index.html")
 

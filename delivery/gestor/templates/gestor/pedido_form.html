@@ -1,74 +1,78 @@
-{% load static %}
-{% load bootstrap5 %}
-{% bootstrap_css %}
-{% bootstrap_javascript %}
-{% bootstrap_messages %}
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Cadastro de Pedido</title>
-    <script type="text/javascript" src="https://cdnjs.com/libraries/bootstrap-datetimepicker/4.17.37"></script>
-  </head>
-  <body>
+{% extends 'base.html' %}
+{% block titulo %} Cadastro de Pedido {% endblock %}
+{% block subtitulo %} Cadastro de Pedido {% endblock %}
+{% block corpo %}
     <center>
-      <h1>Cadastro de Pedido</h1>
-    <div class="container">
-      <div class="col-md-12 col-sm-12 col-xs-12">
-        
-          <form method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            <div class="col-md-12 col-sm-12 col-xs-12">
-              
-              <div class="row" style="line-height: 1;">
-                <div class="col-md-1 col-sm-1 col-xs-1"></div>
-                <div class="col-md-4 col-sm-4 col-xs-4">
-                  {% bootstrap_field form.horarioDataPedido placeholder='' %}
+      
+      <div class="container">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+          
+            <form method="POST" enctype="multipart/form-data">
+              {% csrf_token %}
+              <div class="col-md-12 col-sm-12 col-xs-12">
+                
+                <div class="row" style="line-height: 1;">
+                  <div class="col-md-1 col-sm-1 col-xs-1"></div>
+                  <div class="col-md-4 col-sm-4 col-xs-4">                    
+                    {{ form.horarioDataPedido.label_tag }}
+                    {{ form.horarioDataPedido }}                                        
+                  </div>
+                  <div class="col-md-4 col-sm-4 col-xs-4">
+                    {{ form.numeroPedido.label_tag }}
+                    {{ form.numeroPedido }}
+                  </div>
                 </div>
-
-                <div class="col-md-4 col-sm-4 col-xs-4">
-                  {% bootstrap_field form.numeroPedido placeholder='' %}
+                <br><br>
+                <div class="row" style="line-height: 1;">
+                  <div class="col-md-1 col-sm-1 col-xs-1"></div>
+                  <div class="col-md-4 col-sm-4 col-xs-4">
+                    {{ form.valorTotal.label_tag  }}
+                    {{ form.valorTotal  }}
+                  </div>
+                  <div class="col-md-4 col-sm-4 col-xs-4">
+                    {{  form.status.label_tag }}
+                    {{  form.status }}
+                  </div>
+                </div>
+                <br><br>
+                <div class="row" style="line-height: 1;">
+                  <div class="col-md-1 col-sm-1 col-xs-1"></div>
+                  <div class="col-md-4 col-sm-4 col-xs-4">
+                    {{  form.cliente.label_tag }}
+                    {{  form.cliente }}
+                  </div>
+                  <div class="col-md-4 col-sm-4 col-xs-4">
+                    {{ form.entregador.label_tag }}
+                    {{ form.entregador }}
+                  </div>
+                </div>
+                <br><br>
+                <div class="row" style="line-height: 1;">
+                  <div class="col-md-1 col-sm-1 col-xs-1"></div>
+                  <div class="col-md-8 col-sm-12 col-xs-12">
+                    {{ form.produto.label_tag }}
+                    {{ form.produto }}
+                  </div>
+                </div>
+                <br><br>
+                <div class="row" style="line-height: 1;">
+                  <div class="col-md-1 col-sm-1 col-xs-1">
+                    <br /><br />
+                  </div>
+                  <div class="col-md-1 col-sm-1 col-xs-1">
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                  </div>
+                  <div class="col-md-1 col-sm-1 col-xs-1">
+                    <a href="{% url 'pedido_list' %}" class="btn btn-secondary">Voltar</a>
+                  </div>
                 </div>
               </div>
-
-              <div class="row" style="line-height: 1;">
-                <div class="col-md-1 col-sm-1 col-xs-1"></div>
-                <div class="col-md-4 col-sm-4 col-xs-4">
-                  {% bootstrap_field form.valorTotal placeholder='' %}
-                </div>
-                <div class="col-md-4 col-sm-4 col-xs-4">
-                  {% bootstrap_field form.status placeholder='' %}
-                </div>
-              </div>
-              <div class="row" style="line-height: 1;">
-                <div class="col-md-1 col-sm-1 col-xs-1"></div>
-                <div class="col-md-4 col-sm-4 col-xs-4">
-                  {% bootstrap_field form.cliente placeholder='' %}
-                </div>
-                <div class="col-md-4 col-sm-4 col-xs-4">
-                  {% bootstrap_field form.entregador placeholder='' %}
-                </div>
-              </div>
-              <div class="row" style="line-height: 1;">
-                <div class="col-md-1 col-sm-1 col-xs-1"></div>
-                <div class="col-md-8 col-sm-12 col-xs-12">
-                  {% bootstrap_field form.produto placeholder='' %}
-                </div>
-              </div>
-              <div class="row" style="line-height: 1;">
-                <div class="col-md-1 col-sm-1 col-xs-1">
-                  <br /><br />
-                </div>
-                <div class="col-md-1 col-sm-1 col-xs-1">
-                  <button type="submit" class="btn btn-primary">Salvar</button>
-                </div>
-                <div class="col-md-1 col-sm-1 col-xs-1">
-                  <a href="{% url 'pedido_list' %}" class="btn btn-secondary">Voltar</a>
-                </div>
-              </div>
-            </div>
-          </form>
+            </form>
+        </div>
       </div>
-    </div>
-      </center>
-  </body>
-</html>
+    </center>
+
+{% endblock %}
+
+{% block rodape %} 
+{% endblock %}

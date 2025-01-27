@@ -11,8 +11,7 @@ urlpatterns = [
     path("pedido_update/<int:pk>/", views.pedido_update.as_view(), name="pedido_update"),
     path("pedido_delete/<int:pk>/", views.pedido_delete.as_view(), name="pedido_delete"),
     path("pedido_detail/<int:pk>/", views.pedido_detail.as_view(), name="pedido_detail"),
-    path(
-        "entregador_create/",
+    path("entregador_create/",
         views.entregador_create.as_view(),
         name="entregador_create",
     ),

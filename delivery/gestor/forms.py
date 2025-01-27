@@ -24,6 +24,7 @@ class PedidoForm(forms.ModelForm):
             "horarioDataPedido": forms.DateInput(attrs={"type": "date", "class": "form-control", "placeholder": "DD/MM/YYYY"}),
             "valorTotal": forms.TextInput(attrs={"class": "form-control"}),
         }
+        
 
 class UploadCSVForm(forms.Form):
     arquivo_csv = forms.FileField(label="Selecione o arquivo CSV")
