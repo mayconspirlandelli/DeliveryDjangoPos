@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'gestor',
     'chatbot',
     'bootstrap5',
+    'groq',
 ]
 
 MIDDLEWARE = [
