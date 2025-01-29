@@ -70,7 +70,7 @@ class pedido(models.Model):
     def __str__(self):
         return self.numeroPedido
     class Meta:
-        ordering = ['horarioDataPedido']
+        ordering = ['-horarioDataPedido']
 
 
 

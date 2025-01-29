@@ -4,96 +4,8 @@ from django.utils import timezone
 from dotenv import load_dotenv
 import os
 from groq import Groq
+from gestor.models import Cliente, Produto, pedido
 
-
-
-def teste():
-        # Create the Groq client
-        client = Groq(api_key=os.environ.get("GROQ_API_KEY"), )
-
-        # Set the system prompt
-        system_prompt = {
-            "role": "system",
-            "content":
-            "You are a helpful assistant. You reply with very short answers."
-        }
-
-        # Initialize the chat history
-        chat_history = [system_prompt]
-
-        while True:
-            # Get user input from the console
-            user_input = input("You: ")
-
-            # Append the user input to the chat history
-            chat_history.append({"role": "user", "content": user_input})
-
-            response = client.chat.completions.create(model="llama3-70b-8192",
-                                                        messages=chat_history,
-                                                        max_tokens=100,
-                                                        temperature=1.2)
-            # Append the response to the chat history
-            chat_history.append({
-                "role": "assistant",
-                "content": response.choices[0].message.content
-            })
-            # Print the response
-            print("Assistant:", response.choices[0].message.content)
-
-
-
-#Deu certo
-def certo_ask_groq(message):
-    #Carrega chave
-    load_dotenv()
-
-    # Create the Groq client
-    GROQ_API = os.environ.get("GROQ_API_KEY")
-
-    llm = Groq(model='llama3-70b-8192', api_key=GROQ_API)
-    response = llm.complete(message)
-
-    paragrafos = response.text.split("\n\n") #ASSIM funciona.
-    for paragrafo in paragrafos:
-        print(paragrafo)
-        print()
-
-    return paragrafos
-
-def teste_ask_groq(mensagem_usuario):
-    #Carrega chave
-    load_dotenv()
-
-    # Conecta com Groq via API
-    GROQ_API = os.environ.get("GROQ_API_KEY")
-    client = Groq(GROQ_API)
-    
-    # Configura o prompts do comportamento do assistente bot.
-    system_prompt = {
-        "role": "system",
-        "content": "You are a helpful assistant. You reply with very short answers."
-    }
-    
-    # Inicializa o histórico do chatbot
-    chat_history = [system_prompt]
-    
-    # Append the user input to the chat history
-    chat_history.append({"role": "user", "content": mensagem_usuario})
-  
-    response = client.chat.completions.create(
-        #messages=chat_history,
-        messages=mensagem_usuario,
-        model="llama3-70b-8192",
-        temperature=0.7,
-        max_completion_tokens=100,
-        )
-        
-    # chat_history.append({
-    #     "role": "assistant",
-    #     "content": response.choices[0].message.content
-    # })
-    
-    return response.text.split()
 
 
 def ask_groq(mensagem_usuario):
@@ -123,7 +35,7 @@ def ask_groq(mensagem_usuario):
             messages=chat_history,
             model="llama3-8b-8192",
             temperature=0.7,
-            max_completion_tokens=100,
+            max_completion_tokens=150,
         )
 
         # Extrai a resposta do assistente
@@ -136,9 +48,9 @@ def ask_groq(mensagem_usuario):
         return "Ocorreu um erro ao processar sua solicitação."
 
 
-def chatbot(request):
+def certo_chatbot(request):
     """
-    Metodo responsavel por enviar e receber as perguntas e respontas do modelo Llama.
+    Metodo responsavel por enviar e receber as perguntas e respontas do modelo LLM.
     """
     if request.method == 'POST':
         message = request.POST.get('message')
@@ -146,3 +58,22 @@ def chatbot(request):
         return JsonResponse({'message': message, 'response': response})
     return render(request, 'chatbot.html')
 
+def chatbot(request):
+    """
+    Metodo responsavel por enviar e receber as perguntas e respontas do modelo LLM.
+    """
+    if request.method == 'POST':
+        message = request.POST.get('message')
+        
+        #pedido_chegou = pedido.objects.filter(status="ACE").first() # esse aqui deu certo.
+        pedido_recente = pedido.objects.filter(status="ACE").order_by("-horarioDataPedido").first()
+        numero_pedido=pedido_recente.numeroPedido
+        cliente=pedido_recente.cliente.nome
+        produtos=pedido_recente.produto.nome
+        valor_total=pedido_recente.valorTotal
+        resposta_chatbot = f"Pedido {numero_pedido} foi cadastrado. Cliente: {cliente}. Produtos: {produtos}. Total: R$ {valor_total:.2f}"
+        
+        #response = ask_groq(message)
+        response = ask_groq(resposta_chatbot)
+        return JsonResponse({'message': message, 'response': response})
+    return render(request, 'chatbot.html')
